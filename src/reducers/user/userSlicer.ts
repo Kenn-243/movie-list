@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { UserModel } from "../../models/UserModel";
 
 export const signIn = createAsyncThunk(
   "user/signIn",
@@ -94,33 +95,38 @@ export const signIn = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    session: "" as string,
+    loggedUser: null as UserModel | null,
     isError: false as boolean,
     isLoading: false as boolean,
     errorMessage: "" as string,
     token: "" as string,
   },
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      state.loggedUser = null;
+    },
+  },
   extraReducers(builder) {
     builder.addCase(signIn.pending, (state) => {
       state.isError = false;
       state.isLoading = false;
       state.errorMessage = "";
-      state.session = "";
+      state.loggedUser = null;
     });
     builder.addCase(signIn.rejected, (state) => {
       state.isError = true;
       state.isLoading = false;
       state.errorMessage = "";
-      state.session = "";
+      state.loggedUser = null;
     });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.isError = false;
       state.isLoading = false;
       state.errorMessage = "";
-      state.session = action.payload;
+      state.loggedUser = action.payload;
     });
   },
 });
 
+export const { logout } = userSlice.actions;
 export default userSlice.reducer;

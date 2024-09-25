@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { signIn } from "../../reducers/user/userSlicer";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function SignInPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -13,9 +15,12 @@ function SignInPage() {
     setUser({ ...user, [e.target.name]: [e.target.value] });
   }
 
-  function handleSignIn() {
+  async function handleSignIn() {
     if (user.username != "" && user.password != "") {
-      dispatch(signIn({ username: user.username, password: user.password }));
+      await dispatch(
+        signIn({ username: user.username, password: user.password })
+      );
+      navigate("/");
     }
   }
 
