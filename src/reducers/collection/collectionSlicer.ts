@@ -194,7 +194,6 @@ export const collectionSlice = createSlice({
       state.favorites = [];
     });
     builder.addCase(fetchFavorite.fulfilled, (state, action) => {
-      state.isSuccessful = true;
       state.isError = false;
       state.isLoading = false;
       state.favorites = action.payload;
@@ -213,7 +212,6 @@ export const collectionSlice = createSlice({
       state.watchlists = [];
     });
     builder.addCase(fetchWatchlist.fulfilled, (state, action) => {
-      state.isSuccessful = true;
       state.isError = false;
       state.isLoading = false;
       state.watchlists = action.payload;
