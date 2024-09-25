@@ -1,28 +1,41 @@
-import { useState } from "react";
-import { signIn } from "../../reducers/user/userSlicer";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { falsifyUserError, signIn } from "../../reducers/user/userSlicer";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "../../store/store";
+import ErrorPopup from "../../components/ErrorPopup";
 
 function SignInPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loggedUser, isError } = useSelector((state: RootState) => state.user);
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
 
   function handleUserSignIn(e: any) {
-    setUser({ ...user, [e.target.name]: [e.target.value] });
+    setUser({ ...user, [e.target.name]: e.target.value });
   }
 
-  async function handleSignIn() {
-    if (user.username != "" && user.password != "") {
-      await dispatch(
-        signIn({ username: user.username, password: user.password })
-      );
+  useEffect(() => {
+    if (loggedUser) {
       navigate("/");
     }
+  }, [loggedUser, navigate]);
+
+  function handleSignIn() {
+    if (user.username != "" && user.password != "") {
+      dispatch(signIn({ username: user.username, password: user.password }));
+    }
   }
+
+  useEffect(() => {
+    if (isError) {
+      ErrorPopup("Wrong email or password");
+      dispatch(falsifyUserError());
+    }
+  }, [isError, dispatch]);
 
   return (
     <div

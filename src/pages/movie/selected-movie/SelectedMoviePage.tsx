@@ -6,23 +6,104 @@ import Loading from "../../../components/Loading";
 import ReviewCard from "../../../components/ReviewCard";
 import { ReviewModel } from "../../../models/ReviewModel";
 import { fetchReviews } from "../../../reducers/movie/movieSlicer";
+import {
+  addFavorite,
+  addWatchlist,
+  falsifyCollectionError,
+  falsifyCollectionSuccess,
+} from "../../../reducers/collection/collectionSlicer";
+import SuccessPopup from "../../../components/SuccessPopup";
 
 function SelectedMoviePage() {
-  const { movie, reviews, isError, isLoading, errorMessage } = useSelector(
-    (state: RootState) => state.movie
+  const {
+    movie,
+    reviews,
+    isError: movieError,
+    isLoading,
+    errorMessage,
+  } = useSelector((state: RootState) => state.movie);
+  const { isSuccessful, isError: collectionError } = useSelector(
+    (state: RootState) => state.collection
   );
+  const { loggedUser } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   const [reviewPage, setReviewPage] = useState(1);
+  const modal = document.getElementById(
+    "collection_modal"
+  ) as HTMLDialogElement;
 
   function handleReviewPageChange(page: number) {
     setReviewPage(page);
   }
 
+  function handleAddFavorite() {
+    dispatch(addFavorite({ accountId: loggedUser!.id, movieId: movie!.id }));
+    modal.close();
+  }
+
+  function handleAddWatchlist() {
+    dispatch(addWatchlist({ accountId: loggedUser!.id, movieId: movie!.id }));
+    modal.close();
+  }
+
   useEffect(() => {
-    if (isError) {
+    if (collectionError) {
+      ErrorPopup("Wrong email or password");
+      dispatch(falsifyCollectionError());
+    }
+  }, [collectionError, dispatch]);
+
+  useEffect(() => {
+    if (isSuccessful) {
+      SuccessPopup();
+      dispatch(falsifyCollectionSuccess());
+    }
+  }, [isSuccessful, dispatch]);
+
+  function collectionModal() {
+    return (
+      <dialog id="collection_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Add Movie to Collection</h3>
+          {loggedUser ? (
+            <div>
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={handleAddFavorite}
+                  className="w-[400px] h-[40px] rounded bg-yellow-500 text-white hover:bg-yellow-800 transition-colors duration-300"
+                >
+                  Add to Favorites
+                </button>
+              </div>
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={handleAddWatchlist}
+                  className="w-[400px] h-[40px] rounded bg-purple-500 text-white hover:bg-purple-800 transition-colors duration-300"
+                >
+                  Add to Watchlist
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h1>You must be logged in to add this movie to collections</h1>
+            </div>
+          )}
+          <div className="modal-action">
+            <form method="dialog">
+              <button className="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
+    );
+  }
+
+  useEffect(() => {
+    if (movieError) {
       ErrorPopup(errorMessage);
     }
-  }, [isError]);
+  }, [movieError]);
 
   useEffect(() => {
     if (movie?.id) {
@@ -32,6 +113,7 @@ function SelectedMoviePage() {
 
   return (
     <div>
+      {collectionModal()}
       <Loading isLoading={isLoading} />
       <div className="flex flex-col md:flex-row items-start md:items-center m-6 p-6 rounded-lg shadow-lg">
         <img
@@ -39,7 +121,21 @@ function SelectedMoviePage() {
           src={`https://image.tmdb.org/t/p/w500${movie?.poster_path}`}
           alt={movie?.title}
         />
-        <div className="md:ml-6 mt-4 md:mt-0">
+        <div className="md:ml-6 mt-3 md:mt-0">
+          <div className="mt-auto flex justify-end">
+            <button
+              onClick={() =>
+                (
+                  document.getElementById(
+                    "collection_modal"
+                  ) as HTMLDialogElement
+                ).showModal()
+              }
+              className="border rounded bg-purple-600 text-white px-4 py-2 hover:bg-purple-800 transition-colors duration-300"
+            >
+              Add to Collection
+            </button>
+          </div>
           <h1 className="text-3xl font-bold text-gray-900">{movie?.title}</h1>
           <p className="text-gray-600 italic text-sm">
             Release Date: {movie?.release_date}

@@ -9,11 +9,14 @@ import {
 } from "../../reducers/movie/movieSlicer";
 import Loading from "../../components/Loading";
 import ErrorPopup from "../../components/ErrorPopup";
+import SuccessPopup from "../../components/SuccessPopup";
+import { falsifyUserSuccess } from "../../reducers/user/userSlicer";
 
 function MoviePage() {
   const { movies, isError, isLoading, errorMessage } = useSelector(
     (state: RootState) => state.movie
   );
+  const { isSuccessful } = useSelector((state: RootState) => state.user);
   const [activeTab, setActiveTab] = useState("Now Playing");
   const [paging, setPaging] = useState(1);
   const dispatch = useDispatch();
@@ -41,6 +44,13 @@ function MoviePage() {
       ErrorPopup(errorMessage);
     }
   }, [isError]);
+
+  useEffect(() => {
+    if (isSuccessful) {
+      SuccessPopup();
+      dispatch(falsifyUserSuccess());
+    }
+  }, [isSuccessful, dispatch]);
 
   return (
     <div>

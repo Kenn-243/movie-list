@@ -100,10 +100,17 @@ const userSlice = createSlice({
     isLoading: false as boolean,
     errorMessage: "" as string,
     token: "" as string,
+    isSuccessful: false as boolean,
   },
   reducers: {
     logout: (state) => {
       state.loggedUser = null;
+    },
+    falsifyUserSuccess: (state) => {
+      state.isSuccessful = false;
+    },
+    falsifyUserError: (state) => {
+      state.isError = false;
     },
   },
   extraReducers(builder) {
@@ -112,21 +119,25 @@ const userSlice = createSlice({
       state.isLoading = false;
       state.errorMessage = "";
       state.loggedUser = null;
+      state.isSuccessful = false;
     });
     builder.addCase(signIn.rejected, (state) => {
       state.isError = true;
       state.isLoading = false;
       state.errorMessage = "";
       state.loggedUser = null;
+      state.isSuccessful = false;
     });
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.isError = false;
       state.isLoading = false;
       state.errorMessage = "";
       state.loggedUser = action.payload;
+      state.isSuccessful = true;
     });
   },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, falsifyUserSuccess, falsifyUserError } =
+  userSlice.actions;
 export default userSlice.reducer;
