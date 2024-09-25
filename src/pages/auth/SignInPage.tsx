@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { signIn } from "../../reducers/user/userSlicer";
+import { useDispatch } from "react-redux";
 
 function SignInPage() {
+  const dispatch = useDispatch();
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -8,6 +11,12 @@ function SignInPage() {
 
   function handleUserSignIn(e: any) {
     setUser({ ...user, [e.target.name]: [e.target.value] });
+  }
+
+  function handleSignIn() {
+    if (user.username != "" && user.password != "") {
+      dispatch(signIn({ username: user.username, password: user.password }));
+    }
   }
 
   return (
@@ -33,13 +42,16 @@ function SignInPage() {
           <div className="mt-2 flex justify-center">
             <input
               type="password"
-              name="username"
+              name="password"
               className="border border-slate-400 rounded mt-2 w-[270px] h-10 pl-2"
               placeholder="Password"
               onChange={handleUserSignIn}
             />
           </div>
-          <button className="mt-7 bg-blue-700 text-white border rounded-3xl w-[270px] h-10">
+          <button
+            onClick={handleSignIn}
+            className="mt-7 bg-blue-700 text-white border rounded-3xl w-[270px] h-10"
+          >
             Sign in
           </button>
         </div>

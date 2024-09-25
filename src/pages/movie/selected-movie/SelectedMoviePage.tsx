@@ -32,8 +32,8 @@ function SelectedMoviePage() {
 
   return (
     <div>
+      <Loading isLoading={isLoading} />
       <div className="flex flex-col md:flex-row items-start md:items-center m-6 p-6 rounded-lg shadow-lg">
-        {Loading(isLoading)}
         <img
           className="w-full md:w-1/3 rounded-lg object-cover"
           src={`https://image.tmdb.org/t/p/w500${movie?.poster_path}`}
@@ -123,21 +123,27 @@ function SelectedMoviePage() {
           </div>
         </div>
       </div>
-      <div className="mt-10 overflow-y-scroll">
-        {reviews.map((review: ReviewModel) => {
-          return (
-            <ReviewCard
-              key={review.id}
-              id={review.id}
-              avatarPath={review.author.avatar_path}
-              authorName={review.author.name}
-              authorUsername={review.author.username}
-              authorRating={review.author.rating}
-              content={review.content}
-              created_at={review.created_at}
-            />
-          );
-        })}
+      <div className="mt-10">
+        {reviews.length > 0 ? (
+          reviews.map((review: ReviewModel) => {
+            return (
+              <ReviewCard
+                key={review.id}
+                id={review.id}
+                avatarPath={review.author.avatar_path}
+                authorName={review.author.name}
+                authorUsername={review.author.username}
+                authorRating={review.author.rating}
+                content={review.content}
+                created_at={review.created_at}
+              />
+            );
+          })
+        ) : (
+          <h1 className="flex justify-center items-center font-medium h-[200px]">
+            There are no Reviews
+          </h1>
+        )}
       </div>
     </div>
   );

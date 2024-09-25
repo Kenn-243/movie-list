@@ -44,7 +44,7 @@ function MoviePage() {
 
   return (
     <div>
-      {Loading(isLoading)}
+      <Loading isLoading={isLoading} />
       <div role="tablist" className="tabs tabs-boxed bg-white">
         <a
           role="tab"

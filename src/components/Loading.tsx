@@ -1,4 +1,4 @@
-function Loading(isLoading: boolean) {
+function Loading({ isLoading }: any) {
   return (
     <div
       className={`${
